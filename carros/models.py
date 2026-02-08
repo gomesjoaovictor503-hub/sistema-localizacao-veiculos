@@ -1,15 +1,22 @@
 from django.db import models
 
-
 # Esta classe representa a tabela de carros no seu banco de dados
 class Carro(models.Model):
     # Definimos as opções de status para as abas do seu sistema
-    # O primeiro valor é o que fica no banco, o segundo é o que aparece para você
     STATUS_CHOICES = [
         ('pre_localizado', 'Pré-localizado'),
         ('localizado', 'Localizado'),
         ('apreendido', 'Apreendido'),
     ]
+
+    # --- NOVO CAMPO ABAIXO ---
+    # Este campo guardará o nome/apelido que o usuário digitou para acessar
+    usuario_acesso = models.CharField(
+        max_length=100, 
+        default='admin', 
+        verbose_name="Nome de Acesso"
+    )
+    # -------------------------
 
     # Campos do cadastro
     placa = models.CharField(max_length=7, unique=True, verbose_name="Placa do Veículo")
