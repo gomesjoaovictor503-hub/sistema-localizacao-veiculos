@@ -1,16 +1,16 @@
+import os
 from pathlib import Path
-import os # Importante para os caminhos no servidor
+import dj_database_url
 
+# Caminho base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SEGURANÇA: Mantenha sua chave, mas em produção o ideal é usar variáveis de ambiente
-SECRET_KEY = 'django-insecure-m%3lpynxs_t_b%2gr&q#vuf&&^_1epy8il&zg7xa1n+!s#xe_w'
-
-# SEGURANÇA: DEBUG deve ser False em produção para não expor erros do sistema
+# SEGURANÇA
+SECRET_KEY = 'django-insecure-sua-chave-aqui'
 DEBUG = True
-# Coloque aqui o seu domínio do PythonAnywhere e o '127.0.0.1' para testes locais
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['meu-sistema-localiza-1914joao-5874143c.koyeb.app', 'localhost', '127.0.0.1']
 
+# Configuração de Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -36,10 +37,11 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -50,28 +52,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+# CONFIGURAÇÃO DO BANCO DE DADOS (POSTGRES NO KOYEB / SQLITE LOCAL)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
+        conn_max_age=600
+    )
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# Configurações de Idioma para o Brasil
+# Internacionalização
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Arquivos Estáticos (Crucial para o CSS funcionar no servidor)
+# Arquivos Estáticos
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configurações de Login
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
